@@ -16,6 +16,7 @@ setup(
     author_email='aj.ostergaard@gmail.com',
     description='A django-payments backend for the Redsys payment gateway',
     long_description=README,
+    long_description_content_type='text/markdown',
     version='0.1',
     url='https://github.com/ajostergaard/django-payments-redsys',
     packages=PACKAGES,
