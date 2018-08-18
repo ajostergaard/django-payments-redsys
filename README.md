@@ -36,3 +36,5 @@ CHECKOUT_PAYMENT_CHOICES = [('redsys', 'Redsys')]
 if any('redsys' in provider for provider in CHECKOUT_PAYMENT_CHOICES):
     INSTALLED_APPS.append('payments_redsys')
 ```
+
+Copyright (C) 2018 AJ Ostergaard
