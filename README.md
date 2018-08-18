@@ -2,6 +2,10 @@
 
 A Redsys~~Sermepa~~ payment gateway backend for [django-payments](https://github.com/mirumee/django-payments).
 
+## Install
+
+    pip install django-payments-redsys
+
 ## Parameters
 
 * merchant_code (required): Merchant Code - Redsys parameter.
