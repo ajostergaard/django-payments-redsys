@@ -20,11 +20,12 @@ setup(
     description='A django-payments backend for the Redsys payment gateway',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='0.3',
+    version='0.3.post1',
     url='https://github.com/ajostergaard/django-payments-redsys',
     packages=PACKAGES,
     include_package_data=True,
     classifiers=[
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
@@ -38,5 +39,4 @@ setup(
         'Framework :: Django :: 1.11',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    install_requires=REQUIREMENTS,
-    zip_safe=False)
+    install_requires=REQUIREMENTS)
