@@ -36,7 +36,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 
 from payments.forms import PaymentForm
-from payments.core import BasicProvider
+from payments.core import BasicProvider, get_base_url, urljoin
 
 from django import forms
 
@@ -96,8 +96,8 @@ class RedsysProvider(BasicProvider):
             "DS_MERCHANT_TRANSACTIONTYPE": '0',
             "DS_MERCHANT_TERMINAL": self.terminal,
             "DS_MERCHANT_MERCHANTURL": self.get_return_url(payment),
-            "DS_MERCHANT_URLOK": payment.get_success_url(),
-            "DS_MERCHANT_URLKO": payment.get_failure_url(),
+            "DS_MERCHANT_URLOK": urljoin(get_base_url(), payment.get_success_url()),
+            "DS_MERCHANT_URLKO": urljoin(get_base_url(), payment.get_failure_url()),
             "Ds_Merchant_ConsumerLanguage": '002',
         }
         json_data = json.dumps(merchant_data)
