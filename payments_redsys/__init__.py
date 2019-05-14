@@ -79,7 +79,11 @@ class RedsysProvider(BasicProvider):
         self.shared_secret = kwargs.pop('shared_secret')
         self.currency = kwargs.pop('currency', '978')
 
-        self.endpoint = kwargs.pop('endpoint', REDSYS_ENVIRONMENTS.get('pruebas'))
+        # Get provided endpoint base domain or REDSYS.pruebas env
+        self.endpoint = urljoin(
+            kwargs.pop('endpoint', REDSYS_ENVIRONMENTS.get('pruebas')),
+            "",
+        )
         assert self.endpoint in REDSYS_ENVIRONMENTS.values(), \
             "Provided Redsys endpoint '{}' is not valid".format(self.endpoint)
 
