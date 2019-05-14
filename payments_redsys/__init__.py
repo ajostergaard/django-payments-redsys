@@ -77,7 +77,11 @@ class RedsysProvider(BasicProvider):
         self.terminal = kwargs.pop('terminal')
         self.shared_secret = kwargs.pop('shared_secret')
         self.currency = kwargs.pop('currency', '978')
-        self.endpoint = kwargs.pop('endpoint', 'https://sis-t.redsys.es:25443/sis/realizarPago')
+
+        self.endpoint = kwargs.pop('endpoint', REDSYS_ENVIRONMENTS.get('pruebas'))
+        assert self.endpoint in REDSYS_ENVIRONMENTS.values(), \
+            "Provided Redsys endpoint '{}' is not valid".format(self.endpoint)
+
         self.order_number_prefix = kwargs.pop('order_number_prefix','0000')
         self.signature_version = kwargs.pop('signature_version','HMAC_SHA256_V1')
         #TODO self.button_image = '/static/images/payment_button.jpg'
