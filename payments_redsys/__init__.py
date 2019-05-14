@@ -96,6 +96,9 @@ class RedsysProvider(BasicProvider):
         return "{}/sis/services/SerClsWSEntrada/wsdl/SerClsWSEntrada.wsdl".format(self.endpoint)
 
     def post(self, *args, **kwargs):
+        client = zeep.Client(*args) 
+        return client.service.trataPeticion(kwargs.get('data', {}))
+
     def get_hidden_fields(self, payment):
         #site = Site.objects.get_current()
         order_number = '%s%d' % (self.order_number_prefix,payment.pk)
