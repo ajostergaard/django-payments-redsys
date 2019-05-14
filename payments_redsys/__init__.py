@@ -27,11 +27,6 @@ import pyDes
 
 from codecs import encode
 
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
-
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
