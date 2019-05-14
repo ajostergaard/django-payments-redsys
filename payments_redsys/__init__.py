@@ -130,6 +130,12 @@ class RedsysProvider(BasicProvider):
         return data
 
     def refund(self, payment, amount=None):
+        """
+        It requests a refund to Redsys using their Webservices layer
+
+        More information about the process and the error codes at
+        https://canales.redsys.es/canales/ayuda/documentacion/Manual%20integracion%20para%20conexion%20por%20Web%20Service.pdf
+        """
         refund_amount = amount or payment.captured_amount
         # cents = str(int(
         #     refund_amount.quantize(CENTS, rounding=ROUND_HALF_UP)) * 100
