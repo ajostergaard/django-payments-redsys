@@ -193,7 +193,7 @@ class RedsysProvider(BasicProvider):
             # Wait to raise 
             pass
 
-        raise PaymentError("Redsys doesn't accept the refund")
+        raise PaymentError("Redsys error '{}'".format(response_code or "non matched response"))
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
