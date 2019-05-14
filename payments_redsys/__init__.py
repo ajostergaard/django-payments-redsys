@@ -16,10 +16,12 @@
 # along with django-payments-redsys.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+import zeep
 import hashlib
 import datetime
 import json
 import re
+import xmltodict
 
 import base64
 import hmac
@@ -32,6 +34,7 @@ from django.shortcuts import redirect
 
 from payments.forms import PaymentForm
 from payments.core import BasicProvider, get_base_url, urljoin
+from payments import PaymentError
 
 from django import forms
 
@@ -63,17 +66,43 @@ class RedsysResponseForm(forms.Form):
     Ds_Signature = forms.CharField(max_length=256)
     Ds_MerchantParameters = forms.CharField(max_length=2048)
 
+# TODO: Will be great to reach the endpoint just using "real" or "pruebas", but will be a major update
+REDSYS_ENVIRONMENTS = {
+    "real": "https://sis.redsys.es",
+    "pruebas": "https://sis-t.redsys.es:25443",
+}
+
 class RedsysProvider(BasicProvider):
     def __init__(self, *args, **kwargs):
         self.merchant_code = kwargs.pop('merchant_code')
         self.terminal = kwargs.pop('terminal')
         self.shared_secret = kwargs.pop('shared_secret')
         self.currency = kwargs.pop('currency', '978')
-        self.endpoint = kwargs.pop('endpoint', 'https://sis-t.redsys.es:25443/sis/realizarPago')
+
+        # Get provided endpoint base domain or REDSYS.pruebas env
+        self.endpoint = urljoin(
+            kwargs.pop('endpoint', REDSYS_ENVIRONMENTS.get('pruebas')),
+            "",
+        )
+        assert self.endpoint in REDSYS_ENVIRONMENTS.values(), \
+            "Provided Redsys endpoint '{}' is not valid".format(self.endpoint)
+
         self.order_number_prefix = kwargs.pop('order_number_prefix','0000')
         self.signature_version = kwargs.pop('signature_version','HMAC_SHA256_V1')
         #TODO self.button_image = '/static/images/payment_button.jpg'
         super(RedsysProvider, self).__init__(*args, **kwargs)
+
+    @property
+    def endpoint_form(self):
+        return "{}/sis/realizarPago".format(self.endpoint)
+
+    @property
+    def endpoint_wsdl(self):
+        return "{}/sis/services/SerClsWSEntrada/wsdl/SerClsWSEntrada.wsdl".format(self.endpoint)
+
+    def post(self, *args, **kwargs):
+        client = zeep.Client(*args) 
+        return client.service.trataPeticion(kwargs.get('data', {}))
 
     def get_hidden_fields(self, payment):
         #site = Site.objects.get_current()
@@ -105,11 +134,19 @@ class RedsysProvider(BasicProvider):
         }
         return data
 
-    '''
     def refund(self, payment, amount=None):
-        refund_amount = payment.captured_amount if amount is None else amount
-        cents = str(refund_amount.quantize(CENTS, rounding=ROUND_HALF_UP))
-        order_number = '%s%d' % (self.order_number_prefix,payment.pk)
+        """
+        It requests a refund to Redsys using their Webservices layer
+
+        More information about the process and the error codes at
+        https://canales.redsys.es/canales/ayuda/documentacion/Manual%20integracion%20para%20conexion%20por%20Web%20Service.pdf
+        """
+        refund_amount = amount or payment.captured_amount
+        # cents = str(int(
+        #     refund_amount.quantize(CENTS, rounding=ROUND_HALF_UP)) * 100
+        # )
+        cents = str(int(refund_amount * 100))
+        order_number = '%s%d' % (self.order_number_prefix, payment.pk)
         merchant_data = {
             "DS_MERCHANT_AMOUNT": cents,
             "DS_MERCHANT_ORDER": order_number,
@@ -119,21 +156,53 @@ class RedsysProvider(BasicProvider):
             "DS_MERCHANT_TERMINAL": self.terminal,
             "DS_MERCHANT_MERCHANTURL": self.get_return_url(payment),
         }
-        json_data = json.dumps(merchant_data)
-        b64_params = base64.b64encode(json_data.encode())
-        signature = compute_signature(str(order_number), b64_params, self.shared_secret)
+
+        # Prepare the signature
+        signature_data = xmltodict.unparse(
+            {"DATOSENTRADA": merchant_data},
+            full_document=False,
+        )
+        b64_params = base64.b64encode(signature_data.encode())
+        signature = compute_signature(
+            str(order_number),
+            signature_data.encode(), 
+            self.shared_secret
+        )
+
+        # Prepare the resultant XML
         data = {
-            'Ds_SignatureVersion': self.signature_version,
-            'Ds_MerchantParameters': b64_params.decode(),
-            'Ds_Signature': signature.decode(),
+            "REQUEST": {
+                "DATOSENTRADA": merchant_data,
+                'DS_SIGNATUREVERSION': self.signature_version,
+                'DS_SIGNATURE': signature.decode(),
+            },
         }
-        # now need to post this to redsys...
-        return amount
-    '''
+        data_xml = xmltodict.unparse(data)
+        response = self.post(
+            self.endpoint_wsdl,
+            data=data_xml,
+        )
+
+        # Validate the response
+        response_code = None
+        try:
+            response_dict = xmltodict.parse(response)
+            response_code = response_dict.get('RETORNOXML', {}).get('CODIGO', False)
+
+            parsed_code = int(response_code)
+            if 0 <= parsed_code < 100 \
+                or parsed_code == 400 \
+                or parsed_code == 900:
+                return refund_amount
+        except:
+            # Wait to raise 
+            pass
+
+        raise PaymentError("Redsys error '{}'".format(response_code or "non matched response"))
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
-                           self.endpoint, self._method)
+                           self.endpoint_form, self._method)
 
     def process_data(self, payment, request):
         form = RedsysResponseForm(request.POST)
