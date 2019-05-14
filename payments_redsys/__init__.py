@@ -27,6 +27,7 @@ import pyDes
 
 from codecs import encode
 
+import requests
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
@@ -74,6 +75,9 @@ class RedsysProvider(BasicProvider):
         self.signature_version = kwargs.pop('signature_version','HMAC_SHA256_V1')
         #TODO self.button_image = '/static/images/payment_button.jpg'
         super(RedsysProvider, self).__init__(*args, **kwargs)
+
+    def post(self, payment, *args, **kwargs):
+        return requests.post(*args, **kwargs)
 
     def get_hidden_fields(self, payment):
         #site = Site.objects.get_current()
