@@ -197,7 +197,7 @@ class RedsysProvider(BasicProvider):
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
-                           self.endpoint, self._method)
+                           self.endpoint_form, self._method)
 
     def process_data(self, payment, request):
         form = RedsysResponseForm(request.POST)
