@@ -133,9 +133,8 @@ class RedsysProvider(BasicProvider):
             'Ds_MerchantParameters': b64_params.decode(),
             'Ds_Signature': signature.decode(),
         }
-        # now need to post this to redsys...
-        return amount
-    '''
+
+        response = self.post(payment, self.endpoint, data=data)
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
