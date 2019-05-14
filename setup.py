@@ -16,6 +16,9 @@ REQUIREMENTS = [
     'zeep',
 ]
 
+with open('requirements.txt', 'r') as f:
+    REQUIREMENTS = f.readlines()
+
 setup(
     name='django-payments-redsys',
     author='AJ Ostergaard',
