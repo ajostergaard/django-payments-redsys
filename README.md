@@ -14,8 +14,8 @@ A Redsys~~Sermepa~~ payment gateway backend for [django-payments](https://github
   * "obtained by accessing the Administration Module, Merchant Data Query option in the 'See Key' section"
 * currency (default:'978'): ISO-4217 currency code.
   * For example: EUR: '978', GBP: '826', USD: '840' (source: https://en.wikipedia.org/wiki/ISO_4217#Active_codes).
-* endpoint (default:'https://sis-t.redsys.es:25443/sis/realizarPago': desired endpoint.
-  * Sandbox endpoint is default. Production endpoint is https://sis.redsys.es/sis/realizarPago
+* endpoint (default:'https://sis-t.redsys.es:25443': desired endpoint.
+  * Sandbox endpoint is default. Production endpoint is 'https://sis.redsys.es'
 * order_number_prefix (default:'0000'): Payment PK is suffixed to this to create Redsys order number
 * signature_version (default:'HMAC_SHA256_V1'): Only supported signature type.
 

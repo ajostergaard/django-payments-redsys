@@ -12,7 +12,12 @@ REQUIREMENTS = [
     'Django>=1.11',
     'django-payments>=0.12.3',
     'pyDes>=2.0.0',
+    'xmltodict',
+    'zeep',
 ]
+
+with open('requirements.txt', 'r') as f:
+    REQUIREMENTS = f.readlines()
 
 setup(
     name='django-payments-redsys',
@@ -21,7 +26,7 @@ setup(
     description='A django-payments backend for the Redsys payment gateway',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='0.3.post1',
+    version='0.4',
     url='https://github.com/ajostergaard/django-payments-redsys',
     packages=PACKAGES,
     include_package_data=True,
@@ -36,6 +41,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Framework :: Django',
         'Framework :: Django :: 1.11',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
