@@ -163,11 +163,20 @@ class RedsysProvider(BasicProvider):
             signature_data.encode(), 
             self.shared_secret
         )
+
+        # Prepare the resultant XML
         data = {
-            'Ds_SignatureVersion': self.signature_version,
-            'Ds_MerchantParameters': b64_params.decode(),
-            'Ds_Signature': signature.decode(),
+            "REQUEST": {
+                "DATOSENTRADA": merchant_data,
+                'DS_SIGNATUREVERSION': self.signature_version,
+                'DS_SIGNATURE': signature.decode(),
+            },
         }
+        data_xml = xmltodict.unparse(data)
+        response = self.post(
+            self.endpoint_wsdl,
+            data=data_xml,
+        )
 
         response = self.post(payment, self.endpoint, data=data)
         # Redsys "always" return a 200 with HTML content...
