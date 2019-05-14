@@ -135,6 +135,12 @@ class RedsysProvider(BasicProvider):
         }
 
         response = self.post(payment, self.endpoint, data=data)
+        # Redsys "always" return a 200 with HTML content...
+        if response and response.status_code == 200:
+            # dirty way to confirm if refund has been achieved...
+            if "RSisReciboOK" in response.text and \
+                "operacionAceptada" in response.text:
+                return refund_amount
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
