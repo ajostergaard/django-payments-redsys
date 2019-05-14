@@ -87,8 +87,9 @@ class RedsysProvider(BasicProvider):
         #TODO self.button_image = '/static/images/payment_button.jpg'
         super(RedsysProvider, self).__init__(*args, **kwargs)
 
-    def post(self, payment, *args, **kwargs):
-        return requests.post(*args, **kwargs)
+    @property
+    def endpoint_form(self):
+        return "{}/sis/realizarPago".format(self.endpoint)
 
     def get_hidden_fields(self, payment):
         #site = Site.objects.get_current()
