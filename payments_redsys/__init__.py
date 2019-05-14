@@ -109,11 +109,13 @@ class RedsysProvider(BasicProvider):
         }
         return data
 
-    '''
     def refund(self, payment, amount=None):
-        refund_amount = payment.captured_amount if amount is None else amount
-        cents = str(refund_amount.quantize(CENTS, rounding=ROUND_HALF_UP))
-        order_number = '%s%d' % (self.order_number_prefix,payment.pk)
+        refund_amount = amount or payment.captured_amount
+        # cents = str(int(
+        #     refund_amount.quantize(CENTS, rounding=ROUND_HALF_UP)) * 100
+        # )
+        cents = str(int(refund_amount * 100))
+        order_number = '%s%d' % (self.order_number_prefix, payment.pk)
         merchant_data = {
             "DS_MERCHANT_AMOUNT": cents,
             "DS_MERCHANT_ORDER": order_number,
