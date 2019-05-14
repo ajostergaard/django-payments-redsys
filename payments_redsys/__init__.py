@@ -65,6 +65,12 @@ class RedsysResponseForm(forms.Form):
     Ds_Signature = forms.CharField(max_length=256)
     Ds_MerchantParameters = forms.CharField(max_length=2048)
 
+# TODO: Will be great to reach the endpoint just using "real" or "pruebas", but will be a major update
+REDSYS_ENVIRONMENTS = {
+    "real": "https://sis.redsys.es",
+    "pruebas": "https://sis-t.redsys.es:25443",
+}
+
 class RedsysProvider(BasicProvider):
     def __init__(self, *args, **kwargs):
         self.merchant_code = kwargs.pop('merchant_code')
