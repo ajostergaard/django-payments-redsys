@@ -151,9 +151,18 @@ class RedsysProvider(BasicProvider):
             "DS_MERCHANT_TERMINAL": self.terminal,
             "DS_MERCHANT_MERCHANTURL": self.get_return_url(payment),
         }
-        json_data = json.dumps(merchant_data)
-        b64_params = base64.b64encode(json_data.encode())
-        signature = compute_signature(str(order_number), b64_params, self.shared_secret)
+
+        # Prepare the signature
+        signature_data = xmltodict.unparse(
+            {"DATOSENTRADA": merchant_data},
+            full_document=False,
+        )
+        b64_params = base64.b64encode(signature_data.encode())
+        signature = compute_signature(
+            str(order_number),
+            signature_data.encode(), 
+            self.shared_secret
+        )
         data = {
             'Ds_SignatureVersion': self.signature_version,
             'Ds_MerchantParameters': b64_params.decode(),
