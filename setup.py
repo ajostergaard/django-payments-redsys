@@ -12,6 +12,8 @@ REQUIREMENTS = [
     'Django>=1.11',
     'django-payments>=0.12.3',
     'pyDes>=2.0.0',
+    'xmltodict',
+    'zeep',
 ]
 
 setup(

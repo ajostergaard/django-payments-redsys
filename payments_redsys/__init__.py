@@ -16,10 +16,12 @@
 # along with django-payments-redsys.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
+import zeep
 import hashlib
 import datetime
 import json
 import re
+import xmltodict
 
 import base64
 import hmac
@@ -27,7 +29,6 @@ import pyDes
 
 from codecs import encode
 
-import requests
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
