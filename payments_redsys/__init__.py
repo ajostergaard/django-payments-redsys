@@ -33,6 +33,7 @@ from django.shortcuts import redirect
 
 from payments.forms import PaymentForm
 from payments.core import BasicProvider, get_base_url, urljoin
+from payments import PaymentError
 
 from django import forms
 
@@ -141,6 +142,8 @@ class RedsysProvider(BasicProvider):
             if "RSisReciboOK" in response.text and \
                 "operacionAceptada" in response.text:
                 return refund_amount
+
+        raise PaymentError("Redsys doesn't accept the refund")
 
     def get_form(self, payment, data=None):
         return PaymentForm(self.get_hidden_fields(payment),
