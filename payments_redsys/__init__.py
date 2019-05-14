@@ -178,13 +178,20 @@ class RedsysProvider(BasicProvider):
             data=data_xml,
         )
 
-        response = self.post(payment, self.endpoint, data=data)
-        # Redsys "always" return a 200 with HTML content...
-        if response and response.status_code == 200:
-            # dirty way to confirm if refund has been achieved...
-            if "RSisReciboOK" in response.text and \
-                "operacionAceptada" in response.text:
+        # Validate the response
+        response_code = None
+        try:
+            response_dict = xmltodict.parse(response)
+            response_code = response_dict.get('RETORNOXML', {}).get('CODIGO', False)
+
+            parsed_code = int(response_code)
+            if 0 <= parsed_code < 100 \
+                or parsed_code == 400 \
+                or parsed_code == 900:
                 return refund_amount
+        except:
+            # Wait to raise 
+            pass
 
         raise PaymentError("Redsys doesn't accept the refund")
 
