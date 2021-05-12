@@ -78,7 +78,7 @@ class RedsysProvider(BasicProvider):
         self.terminal = kwargs.pop('terminal')
         self.shared_secret = kwargs.pop('shared_secret')
         self.currency = kwargs.pop('currency', '978')
-        self.direct_payment = str(kwargs.pop('direct_payment', True)).upper()
+        self.direct_payment = str(kwargs.pop('direct_payment', False)).upper()
 
         # Get provided endpoint base domain or REDSYS.pruebas env
         self.endpoint = urljoin(
