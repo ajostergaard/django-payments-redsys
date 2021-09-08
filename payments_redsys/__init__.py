@@ -78,6 +78,7 @@ class RedsysProvider(BasicProvider):
         self.terminal = kwargs.pop('terminal')
         self.shared_secret = kwargs.pop('shared_secret')
         self.currency = kwargs.pop('currency', '978')
+        self.direct_payment = str(kwargs.pop('direct_payment', False)).upper()
 
         # Get provided endpoint base domain or REDSYS.pruebas env
         self.endpoint = urljoin(
@@ -116,6 +117,7 @@ class RedsysProvider(BasicProvider):
             "DS_MERCHANT_AMOUNT": amount,
             "DS_MERCHANT_ORDER": order_number,
             "DS_MERCHANT_MERCHANTCODE": self.merchant_code,
+            "DS_MERCHANT_DIRECTPAYMENT": self.direct_payment,
             "DS_MERCHANT_CURRENCY": self.currency,
             "DS_MERCHANT_TRANSACTIONTYPE": '0',
             "DS_MERCHANT_TERMINAL": self.terminal,
@@ -151,6 +153,7 @@ class RedsysProvider(BasicProvider):
             "DS_MERCHANT_AMOUNT": cents,
             "DS_MERCHANT_ORDER": order_number,
             "DS_MERCHANT_MERCHANTCODE": self.merchant_code,
+            "DS_MERCHANT_DIRECTPAYMENT": self.direct_payment,
             "DS_MERCHANT_CURRENCY": self.currency,
             "DS_MERCHANT_TRANSACTIONTYPE": '3',
             "DS_MERCHANT_TERMINAL": self.terminal,

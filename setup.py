@@ -26,7 +26,7 @@ setup(
     description='A django-payments backend for the Redsys payment gateway',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='0.4',
+    version='0.5',
     url='https://github.com/ajostergaard/django-payments-redsys',
     packages=PACKAGES,
     include_package_data=True,

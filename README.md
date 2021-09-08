@@ -18,6 +18,9 @@ A Redsys~~Sermepa~~ payment gateway backend for [django-payments](https://github
   * Sandbox endpoint is default. Production endpoint is 'https://sis.redsys.es'
 * order_number_prefix (default:'0000'): Payment PK is suffixed to this to create Redsys order number
 * signature_version (default:'HMAC_SHA256_V1'): Only supported signature type.
+* direct_payment (default: False): True or False
+  * redsys (spanish) related doc: https://pagosonline.redsys.es/oneclick.html
+
 
 
 ## settings.py
