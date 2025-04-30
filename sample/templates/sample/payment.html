@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="space-y-1">
+  <div class="font-bold text-xl">
+    <span class="text-sm text-right font-thin">Pagar a nom de</span>
+    {{payment.billing_first_name}}
+  </div>
+
+  {% if payment.billing_city  %}
+  <div class="font-bold text-xl">
+    <span class="text-sm text-right font-thin">Població</span>
+    {{payment.billing_city}}
+  </div>
+  {% endif %}
+
+  <div class="font-bold text-xl">
+    <span class="text-sm text-right font-thin">Aportació</span>
+    {{payment.total}}€
+  </div>
+
+</section>
+
+
+<form action="{{ form.action }}" method="{{ form.method }}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <p>
+    <input class="mt-4 btn btn-success w-full" type="submit" value="Pagar" />
+  </p>
+</form>
+
+{% endblock content %}

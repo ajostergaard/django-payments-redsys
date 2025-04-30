@@ -26,7 +26,7 @@ class Payment(BasePayment):
 
     def get_purchased_items(self) -> Iterable[PurchasedItem]:
         yield PurchasedItem(
-            name=self.zone.name,
+            name="You bought something...",
             sku=f"{self.id}",
             quantity=1,
             price=self.total,

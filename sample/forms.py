@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django import forms
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -5,6 +7,7 @@ from payments import get_payment_model
 
 
 class PaymentForm(forms.ModelForm):
+
     class Meta:
         model = get_payment_model()
         fields = [
@@ -22,3 +25,9 @@ class PaymentForm(forms.ModelForm):
         required=False,
         max_length=180,
     )
+
+    def save(self, *args, **kwargs):
+        self.instance.total = Decimal("50")
+        self.instance.currency = "EUR"
+        self.instance.variant = "redsys"
+        return super().save(*args, **kwargs)

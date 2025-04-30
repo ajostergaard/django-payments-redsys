@@ -9,21 +9,15 @@ from warnings import filterwarnings
 
 from django.utils.translation import gettext_lazy as _
 
-# ------------------------------------------------------------------
-# First-party Django settings
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 SECRET_KEY = "no-secret"
 
-
-# Application definition
-
 INSTALLED_APPS = [
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.staticfiles",
+    "django.forms",
     "payments",
     "sample",
 ]
@@ -59,6 +53,7 @@ TEMPLATES = [
         },
     },
 ]
+
 # make sure the django forms renderer uses local dirs templates
 # (e.g. to override the leaflet admin widget template)
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
@@ -71,23 +66,16 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'test.db',
     }
-}# Try and prevent issue "Remaining connection slots are reserved for non-replication superuser connections"
-# On the server you may set "ALTER SYSTEM SET idle_in_transaction_session_timeout = '5min';"
-CONN_MAX_AGE = 1 * 60
-CONN_HEALTH_CHECKS = True
+}
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+BASE_URL = "http://localhost:8000"
 
-# Forms, prevent deprecation warnings for URL Fields
-
-filterwarnings(
-    "ignore", "The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated."
-)
-FORMS_URLFIELD_ASSUME_HTTPS = True
+ALLOWED_HOSTS = ["*"]
 
 # -----
 # django-payments
-BASE_URL = "http://localhost:8000"
+
 PAYMENT_HOST = BASE_URL.split("//")[1]
 PAYMENT_USES_SSL = BASE_URL.startswith("https")
 
@@ -96,16 +84,17 @@ PAYMENT_MODEL = "sample.Payment"
 
 PAYMENT_VARIANTS = {
     "redsys": (
-        "pay.redsys.RedsysProvider",
+        "payments_redsys.RedsysProvider",
         {
-            "order_number_prefix": "TEST:",
-            "order_number_min_length": 6,
-            "language": "002",  # english. Use 003 for catalan, 001 for spanish
-            # defaults as per redsys test environment
+            # Mamdatory fields, set with defaults as per redsys test environment
             # https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/tarjetas-y-entornos-de-prueba/
             "merchant_code": "999008881",
             "terminal": "001",
             "shared_secret":"sq7HjrUOBfKmC576ILgskD5srU870gJ7",
+            # Optional settings
+            "order_number_prefix": "TEST:",
+            "order_number_min_length": 6,
+            "language": "002",  # english. Use 003 for catalan, 001 for spanish
             "currency": "EUR",
         },
     )

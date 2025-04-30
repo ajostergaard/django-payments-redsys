@@ -6,27 +6,9 @@ A Redsys~~Sermepa~~ payment gateway backend for [django-payments](https://github
 
     pip install django-payments-redsys
 
-## Parameters
+## Configuration
 
-* `merchant_code` (required): Merchant Code - Redsys parameter.
-* `terminal` (required): Terminal - Redsys parameter.
-* `shared_secret` (required): Terminal Key - Redsys parameter.
-  * "obtained by accessing the Administration Module, Merchant Data Query option in the 'See Key' section"
-* `currency` (default:'978'): ISO-4217 currency code.
-  * For example: EUR: '978', GBP: '826', USD: '840' (source: https://en.wikipedia.org/wiki/ISO_4217#Active_codes).
-  * May also use some textual currency codes like e.g. 'EUR' - see source code for full list
-* `environment`: default `test`, other valid option is `real`.
-  * test will use 'https://sis-t.redsys.es:25443'
-  * real (Production) will use 'https://sis.redsys.es'
-* `order_number_prefix` (default:'0000'): Payment PK is suffixed to this to create Redsys order number
-* `order_number_min_length` (default:0): number of digits to use for order numbers, will left-pad with zeroes
-* `signature_version` (default:'HMAC_SHA256_V1'): Only supported signature type.
-* `direct_payment` (default: False): True or False
-  * redsys (spanish) related doc: https://pagosonline.redsys.es/oneclick.html
-
-
-
-## settings.py
+Configure django payments with this provider by adding the following to `settings.py`:
 
 ```python
 PAYMENT_VARIANTS = {
@@ -36,11 +18,35 @@ PAYMENT_VARIANTS = {
         'shared_secret': 'qwertyasdf0123456789',
     })
 }
-
-CHECKOUT_PAYMENT_CHOICES = [('redsys', 'Redsys')]
-
-if any('redsys' in provider for provider in CHECKOUT_PAYMENT_CHOICES):
-    INSTALLED_APPS.append('payments_redsys')
 ```
+
+Here's a list with all available options:
+
+* `merchant_code` (required): Merchant Code - Redsys parameter.
+* `terminal` (required): Terminal - Redsys parameter.
+* `shared_secret` (required): Terminal Key - Redsys parameter.
+  * "obtained by accessing the Administration Module, Merchant Data Query option in the 'See Key' section"
+* `currency` (default:'978'): ISO-4217 currency code.
+  * For example: EUR: '978', GBP: '826', USD: '840' (source: https://en.wikipedia.org/wiki/ISO_4217#Active_codes).
+  * May also use some textual currency codes like e.g. 'EUR', 'GBP'... - see source code for full list
+* `environment`: default `test`, other valid option is `real`.
+  * test will use 'https://sis-t.redsys.es:25443'
+  * real (Production) will use 'https://sis.redsys.es'
+* `order_number_prefix` (default:'0000'): Payment PK is suffixed to this to create Redsys order number
+* `order_number_min_length` (default:0): number of digits to use for order numbers, will left-pad with zeroes
+* `signature_version` (default:'HMAC_SHA256_V1'): Only supported signature type.
+* `direct_payment` (default: False): True or False
+  * redsys (spanish) related doc: https://pagosonline.redsys.es/oneclick.html
+
+## Sample project
+
+This repo contains the seed of sample project that you can look at for inspiration and reference. It is a minimalistic django project, it has enough to be used in automated tests. You can also run it with `just sample-app`.
+
+## Development
+
+You may use the `justfile` tool to run most commands in the development workflow (run the sample app, tests, etc.). Call `just` on a terminal to see all available options.
+
+
+## Credits
 
 Copyright (C) 2018 AJ Ostergaard
