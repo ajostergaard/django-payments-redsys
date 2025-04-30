@@ -46,7 +46,16 @@ This repo contains the seed of sample project that you can look at for inspirati
 
 You may use the `justfile` tool to run most commands in the development workflow (run the sample app, tests, etc.). Call `just` on a terminal to see all available options.
 
+We use `poetry` and `pyproject.toml`. Get set up and check that things work with:
+
+```sh
+poetry install
+just test
+```
 
 ## Credits
 
-Copyright (C) 2018 AJ Ostergaard
+ - Copyright (C) 2018 AJ Ostergaard
+ - Additional contributions by Carles Barrobés
+
+This code is published as free software. See LICENSE for details.
