@@ -4,6 +4,15 @@ set dotenv-load := true
 list:
   @just --list
 
+# Set up - install development dependencies
+setup:
+  poetry install --all-extras
+
+# Publish to PyPI (with the right credentials)
+publish:
+  poetry build
+  poetry publish
+
 # Run all automated tests
 test *args:
   poetry run pytest {{args}}

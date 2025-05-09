@@ -1,26 +1,54 @@
-[tool.poetry]
-name = "payments_redsys"
+[project]
+name = "django-payments-redsys"
 version = "0.6.0"
 description = "A django-payments backend for the Redsys payment gateway"
-authors = ["Carles Barrobés <carles@barrobes.com>"]
-package-mode = true
+authors = [
+    { name="AJ Ostergaard", email="aj.ostergaard@gmail.com" },
+]
+maintainers = [
+    { name="Carles Barrobés", email="carles@barrobes.com" },
+]
 readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = [ "django", "payments", "redsys" ]
+dynamic = [ "classifiers" ]
+dependencies = [
+    "django>=4.2.0",
+    "django-payments>=3.0.1",
+    "pydes~=2.0.1",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10"
+[project.urls]
+homepage = "https://github.com/ajostergaard/django-payments-redsys"
+repository = "https://github.com/ajostergaard/django-payments-redsys"
 
-django = ">=4.2.0"
-django-payments = ">=3.0.1"
-pydes = "^2.0.1"
+[project.optional-dependencies]
+dev = [
+    "black~=24.0",
+    "ruff~=0.11.7",
+    "wheel",
+]
+test = [
+    "pyhamcrest~=2.1.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-django~=4.8",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "~=24.0"
-pyhamcrest = "^2.1.0"
-pytest = "*"
-pytest-cov = "*"
-pytest-django = "~=4.8"
-ruff = "^0.11.7"
-wheel = "*"
+[tool.poetry]
+package-mode = true
+packages = [
+    { include = "payments_redsys" }
+]
+classifiers=[
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Framework :: Django',
+    'Topic :: Software Development :: Libraries :: Application Frameworks',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
 
 [tool.pytest]
 addopts = [
