@@ -6,14 +6,12 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from django.test import RequestFactory, TestCase
 from hamcrest import assert_that, has_entries
-from payments import PaymentError, get_payment_model
+from payments import get_payment_model
 
-from sample.models import Payment
 from payments_redsys import RedsysProvider, compare_signatures, compute_signature
+from sample.models import Payment
 
 redsys_config = {
-    "order_number_prefix": "REDSYS=TEST:",
-    "order_number_min_length": 6,
     "language": "003",
     "currency": "EUR",
     # redsys test environment:
@@ -83,15 +81,13 @@ class TestRedsysProvider(TestCase):
         data = json.loads(
             base64.b64decode(fields["Ds_MerchantParameters"].initial).decode("ascii")
         )
-        process_url = (
-            f"http://localhost:8000/payments/process/{self.payment.token}/"
-        )
+        process_url = f"http://localhost:8000/payments/process/{self.payment.token}/"
         assert_that(
             data,
             has_entries(
                 {
                     "DS_MERCHANT_AMOUNT": "1000",
-                    "DS_MERCHANT_ORDER": "REDSYS=TEST:000001",
+                    "DS_MERCHANT_ORDER": "SMPL000001",
                     "DS_MERCHANT_MERCHANTCODE": redsys_config["merchant_code"],
                     "DS_MERCHANT_DIRECTPAYMENT": "FALSE",
                     "DS_MERCHANT_CURRENCY": "978",
@@ -179,20 +175,16 @@ class TestRedsysProvider(TestCase):
             "https://sis-t.redsys.es:25443/sis/rest/trataPeticionREST",
             json={
                 "Ds_SignatureVersion": "HMAC_SHA256_V1",
-                "Ds_MerchantParameters": "eyJEU19NRVJDSEFOVF9BTU9VTlQiOiAiNTAwIiwgIkRTX01FUkNIQU5UX0NVUlJFTkNZIjogIjk3OCIsICJEU19NRVJDSEFOVF9NRVJDSEFOVENPREUiOiAiOTk5MDA4ODgxIiwgIkRTX01FUkNIQU5UX09SREVSIjogIlJFRFNZUz1URVNUOjAwMDAwMSIsICJEU19NRVJDSEFOVF9URVJNSU5BTCI6ICIwMDEiLCAiRFNfTUVSQ0hBTlRfVFJBTlNBQ1RJT05UWVBFIjogIjMifQ==",
-                "Ds_Signature": "Lp4Akv6gg+IDsAwKC4Kc1+lob5dfjST11GkFISpSkgQ=",
+                "Ds_MerchantParameters": "eyJEU19NRVJDSEFOVF9BTU9VTlQiOiAiNTAwIiwgIkRTX01FUkNIQU5UX0NVUlJFTkNZIjogIjk3OCIsICJEU19NRVJDSEFOVF9NRVJDSEFOVENPREUiOiAiOTk5MDA4ODgxIiwgIkRTX01FUkNIQU5UX09SREVSIjogIlNNUEwwMDAwMDEiLCAiRFNfTUVSQ0hBTlRfVEVSTUlOQUwiOiAiMDAxIiwgIkRTX01FUkNIQU5UX1RSQU5TQUNUSU9OVFlQRSI6ICIzIn0=",
+                "Ds_Signature": "audTCtmyZ758ilFlz8JfbNywKXE1hoHTs420jbhaScU=",
             },
         )
 
-    @pytest.mark.skip("Can't make the refund test endpoint return success")
+    @pytest.mark.skip("Can only test manually with a prior valid order number")
     def test_refund_live(self):
-        with pytest.raises(PaymentError) as error:
-            self.redsys.refund(self.payment, Decimal("200.0"))
+        amount = self.redsys.refund(self.payment, Decimal("5"))
 
-        assert (
-            error.args
-            == "Redsys error SIS0634 'Error no existe la operación de pago sobre la que realizar la anulación'"
-        )
+        assert amount == 500
 
 
 def test_compute_signature():

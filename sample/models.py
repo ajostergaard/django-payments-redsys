@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Iterable
 
 from django.urls import reverse
@@ -14,9 +13,7 @@ class Payment(BasePayment):
         ordering = ["-modified"]
 
     def __str__(self):
-        return (
-            f"id={self.id} total={self.total} status={self.status}"
-        )
+        return f"id={self.id} total={self.total} status={self.status}"
 
     def get_success_url(self) -> str:
         return reverse("pay-success", kwargs={"pk": self.pk})
@@ -32,3 +29,7 @@ class Payment(BasePayment):
             price=self.total,
             currency="EUR",
         )
+
+    @property
+    def order_number(self):
+        return f"SMPL{str(self.pk).zfill(6)}"

@@ -1,10 +1,13 @@
 # django-payments-redsys
 
-A Redsys~~Sermepa~~ payment gateway backend for [django-payments](https://github.com/mirumee/django-payments).
+A Redsys payment gateway backend for [django-payments](https://github.com/mirumee/django-payments).
+
+> Redsys was previously known as Sermepa.
 
 ## Install
 
     pip install django-payments-redsys
+
 
 ## Configuration
 
@@ -32,15 +35,23 @@ Here's a list with all available options:
 * `environment`: default `test`, other valid option is `real`.
   * test will use 'https://sis-t.redsys.es:25443'
   * real (Production) will use 'https://sis.redsys.es'
-* `order_number_prefix` (default:'0000'): Payment PK is suffixed to this to create Redsys order number
-* `order_number_min_length` (default:0): number of digits to use for order numbers, will left-pad with zeroes
+* `order_number_prefix` (optional, default:'0000'): Payment PK is suffixed to this to create Redsys order number
 * `signature_version` (default:'HMAC_SHA256_V1'): Only supported signature type.
 * `direct_payment` (default: False): True or False
   * redsys (spanish) related doc: https://pagosonline.redsys.es/oneclick.html
 
+
+### About order numbers
+
+Redsys requires your payments to include an order number (alphanumeric, 4 to 12 chars) that must be unique per merchant.
+
+With this `RedsysProvider` you can either include an `order_number` in your Payment model (field or property), or a default one will be generated based on the setting `order_number_prefix` and the payment instance's primary key.
+
+
 ## Sample project
 
 This repo contains the seed of sample project that you can look at for inspiration and reference. It is a minimalistic django project, it has enough to be used in automated tests. You can also run it with `just sample-app`.
+
 
 ## Development
 

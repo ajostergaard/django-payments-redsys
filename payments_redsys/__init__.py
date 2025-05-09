@@ -234,7 +234,7 @@ class RedsysProvider(BasicProvider):
             response_dict, order_number
         )
         response_code = merchant_parameters["Ds_Response"]
-        if response_code == "0400":
+        if response_code in ["0400", "0900"]:
             return refund_amount
 
         raise PaymentError(
@@ -274,7 +274,9 @@ class RedsysProvider(BasicProvider):
         return merchant_parameters
 
     def get_order_number(self, payment):
-        return f"{self.order_number_prefix}{str(payment.pk).zfill(self.order_number_min_length)}"
+        if order_number := getattr(payment, "order_number", None):
+            return order_number
+        return f"{self.order_number_prefix}{payment.pk}"
 
     def encode_redsys_request(self, order_number, merchant_data):
         json_data = json.dumps(merchant_data)

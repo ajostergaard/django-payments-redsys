@@ -3,9 +3,7 @@ Django settings for sample app and tests.
 
 """
 
-import os
 from pathlib import Path
-from warnings import filterwarnings
 
 from django.utils.translation import gettext_lazy as _
 
@@ -62,9 +60,9 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test.db',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "test.db",
     }
 }
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -90,9 +88,9 @@ PAYMENT_VARIANTS = {
             # https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/tarjetas-y-entornos-de-prueba/
             "merchant_code": "999008881",
             "terminal": "001",
-            "shared_secret":"sq7HjrUOBfKmC576ILgskD5srU870gJ7",
+            "shared_secret": "sq7HjrUOBfKmC576ILgskD5srU870gJ7",
             # Optional settings
-            "order_number_prefix": "TEST:",
+            "order_number_prefix": "TEST",
             "order_number_min_length": 6,
             "language": "002",  # english. Use 003 for catalan, 001 for spanish
             "currency": "EUR",
