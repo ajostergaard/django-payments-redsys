@@ -1,0 +1,69 @@
+[project]
+name = "django-payments-redsys"
+version = "0.6.0"
+description = "A django-payments backend for the Redsys payment gateway"
+authors = [
+    { name="AJ Ostergaard", email="aj.ostergaard@gmail.com" },
+]
+maintainers = [
+    { name="Carles Barrobés", email="carles@barrobes.com" },
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = [ "django", "payments", "redsys" ]
+dynamic = [ "classifiers" ]
+dependencies = [
+    "django>=4.2.0",
+    "django-payments>=3.0.1",
+    "pydes~=2.0.1",
+]
+
+[project.urls]
+homepage = "https://github.com/ajostergaard/django-payments-redsys"
+repository = "https://github.com/ajostergaard/django-payments-redsys"
+
+[project.optional-dependencies]
+dev = [
+    "black~=24.0",
+    "ruff~=0.11.7",
+    "wheel",
+]
+test = [
+    "pyhamcrest~=2.1.0",
+    "pytest",
+    "pytest-cov",
+    "pytest-django~=4.8",
+]
+
+[tool.poetry]
+package-mode = true
+packages = [
+    { include = "payments_redsys" }
+]
+classifiers=[
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Framework :: Django',
+    'Topic :: Software Development :: Libraries :: Application Frameworks',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+
+[tool.pytest]
+addopts = [
+    "--capture=no",
+    "--disable-warnings",
+    "--no-migrations",
+]
+
+[tool.coverage.run]
+omit = [
+    # don't care about coverage of test code or migrations
+    "**/test_*.py",
+    "**/migrations/*",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

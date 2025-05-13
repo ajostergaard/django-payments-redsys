@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-4">
+
+  <p>Pay 50€</p>
+
+  <form action="{{ form.action }}" method="{{ form.method|default:'post' }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>
+      <input class="mt-4 btn btn-success w-full" type="submit" value="Pagar" />
+    </p>
+  </form>
+
+</div>
+{% endblock content %}
