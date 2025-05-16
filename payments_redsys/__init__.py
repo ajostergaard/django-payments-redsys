@@ -89,6 +89,7 @@ class RedsysProvider(BasicProvider):
         self.endpoint = REDSYS_ENVIRONMENTS[kwargs.pop("environment", "test")]
         self.order_number_prefix = kwargs.pop("order_number_prefix", "0000")
         self.order_number_min_length = kwargs.pop("order_number_min_length", 0)
+        self.process_on_redirect = kwargs.pop("process_on_redirect", False)
         self.signature_version = kwargs.pop("signature_version", "HMAC_SHA256_V1")
         super(RedsysProvider, self).__init__(*args, **kwargs)
 
@@ -112,8 +113,16 @@ class RedsysProvider(BasicProvider):
                 "DS_MERCHANT_TRANSACTIONTYPE": "0",
                 "DS_MERCHANT_TERMINAL": self.terminal,
                 "DS_MERCHANT_MERCHANTURL": self.get_return_url(payment),
-                "DS_MERCHANT_URLOK": self.get_return_url(payment),
-                "DS_MERCHANT_URLKO": self.get_return_url(payment),
+                "DS_MERCHANT_URLOK": (
+                    self.get_return_url(payment)
+                    if self.process_on_redirect
+                    else self.get_success_url(payment)
+                ),
+                "DS_MERCHANT_URLKO": (
+                    self.get_return_url(payment)
+                    if self.process_on_redirect
+                    else self.get_failure_url(payment)
+                ),
                 "Ds_Merchant_ConsumerLanguage": self.language,
             },
         )
@@ -131,7 +140,10 @@ class RedsysProvider(BasicProvider):
         url_success = urljoin(get_base_url(), payment.get_success_url())
         url_failure = urljoin(get_base_url(), payment.get_failure_url())
 
-        form = RedsysResponseForm(request.GET)
+        form = RedsysResponseForm(request.POST or request.GET)
+        logger.info(
+            f"Processing gateway response payment={payment.pk} form={form.data}"
+        )
 
         if form.is_valid():
             logger.debug(
@@ -190,9 +202,15 @@ class RedsysProvider(BasicProvider):
                 logger.debug("rejected: %s" % json.dumps(merchant_parameters))
 
         if success:
-            return HttpResponseRedirect(url_success)
+            return HttpResponseRedirect(self.get_success_url(payment))
         else:
-            return HttpResponseRedirect(url_failure)
+            return HttpResponseRedirect(self.get_failure_url(payment))
+
+    def get_failure_url(self, payment):
+        return urljoin(get_base_url(), payment.get_failure_url())
+
+    def get_success_url(self, payment):
+        return urljoin(get_base_url(), payment.get_success_url())
 
     def refund(self, payment, amount=None):
         """

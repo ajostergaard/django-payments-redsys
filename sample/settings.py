@@ -3,12 +3,14 @@ Django settings for sample app and tests.
 
 """
 
+import os
 from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 SECRET_KEY = "no-secret"
 
 INSTALLED_APPS = [
@@ -94,6 +96,7 @@ PAYMENT_VARIANTS = {
             "order_number_min_length": 6,
             "language": "002",  # english. Use 003 for catalan, 001 for spanish
             "currency": "EUR",
+            "process_on_redirect": ENVIRONMENT == "dev",
         },
     )
 }
