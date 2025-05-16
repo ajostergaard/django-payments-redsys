@@ -9,9 +9,11 @@ setup:
   poetry install --all-extras
 
 # Publish to PyPI (with the right credentials)
-publish:
+publish repo="pypi":
   poetry build
-  poetry publish
+  poetry publish -r {{repo}}
+
+publish-test: (publish 'test-pypi')
 
 # Run all automated tests
 test *args:
