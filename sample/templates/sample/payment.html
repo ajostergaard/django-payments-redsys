@@ -4,19 +4,19 @@
 
 <section class="space-y-1">
   <div class="font-bold text-xl">
-    <span class="text-sm text-right font-thin">Pagar a nom de</span>
+    <span class="text-sm text-right font-thin">Pagar a nom de / Pay as:</span>
     {{payment.billing_first_name}}
   </div>
 
   {% if payment.billing_city  %}
   <div class="font-bold text-xl">
-    <span class="text-sm text-right font-thin">Població</span>
+    <span class="text-sm text-right font-thin">Població / City:</span>
     {{payment.billing_city}}
   </div>
   {% endif %}
 
   <div class="font-bold text-xl">
-    <span class="text-sm text-right font-thin">Aportació</span>
+    <span class="text-sm text-right font-thin">Aportació / Amount:</span>
     {{payment.total}}€
   </div>
 

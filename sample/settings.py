@@ -73,6 +73,8 @@ BASE_URL = "http://localhost:8000"
 
 ALLOWED_HOSTS = ["*"]
 
+USE_TZ = True
+
 # -----
 # django-payments
 
@@ -86,7 +88,7 @@ PAYMENT_VARIANTS = {
     "redsys": (
         "payments_redsys.RedsysProvider",
         {
-            # Mamdatory fields, set with defaults as per redsys test environment
+            # Mandatory fields, set with defaults as per redsys test environment
             # https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/tarjetas-y-entornos-de-prueba/
             "merchant_code": "999008881",
             "terminal": "001",
