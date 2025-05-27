@@ -3,12 +3,14 @@ Django settings for sample app and tests.
 
 """
 
+import os
 from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
 SECRET_KEY = "no-secret"
 
 INSTALLED_APPS = [
@@ -71,6 +73,8 @@ BASE_URL = "http://localhost:8000"
 
 ALLOWED_HOSTS = ["*"]
 
+USE_TZ = True
+
 # -----
 # django-payments
 
@@ -84,7 +88,7 @@ PAYMENT_VARIANTS = {
     "redsys": (
         "payments_redsys.RedsysProvider",
         {
-            # Mamdatory fields, set with defaults as per redsys test environment
+            # Mandatory fields, set with defaults as per redsys test environment
             # https://pagosonline.redsys.es/desarrolladores-inicio/integrate-con-nosotros/tarjetas-y-entornos-de-prueba/
             "merchant_code": "999008881",
             "terminal": "001",
@@ -94,6 +98,7 @@ PAYMENT_VARIANTS = {
             "order_number_min_length": 6,
             "language": "002",  # english. Use 003 for catalan, 001 for spanish
             "currency": "EUR",
+            "process_on_redirect": ENVIRONMENT == "dev",
         },
     )
 }

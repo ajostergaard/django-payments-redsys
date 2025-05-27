@@ -11,7 +11,7 @@ from payments import get_payment_model
 from payments_redsys import RedsysProvider, compare_signatures, compute_signature
 from sample.models import Payment
 
-redsys_config = {
+DEFAULT_CONFIG = {
     "language": "003",
     "currency": "EUR",
     # redsys test environment:
@@ -19,7 +19,15 @@ redsys_config = {
     "merchant_code": "999008881",
     "terminal": "001",
     "shared_secret": "sq7HjrUOBfKmC576ILgskD5srU870gJ7",
+    "process_on_redirect": False,
 }
+
+
+def redsys_config(process_on_redirect: bool):
+    return {
+        **DEFAULT_CONFIG,
+        "process_on_redirect": process_on_redirect,
+    }
 
 
 def redsys_response_factory():
@@ -59,7 +67,7 @@ class TestRedsysProvider(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.redsys = RedsysProvider(**redsys_config)
+        cls.redsys = RedsysProvider(**redsys_config(process_on_redirect=True))
         cls.factory = RequestFactory()
         cls.payment: Payment = ExamplePayment.objects.create(
             pk=1,
@@ -88,11 +96,11 @@ class TestRedsysProvider(TestCase):
                 {
                     "DS_MERCHANT_AMOUNT": "1000",
                     "DS_MERCHANT_ORDER": "SMPL000001",
-                    "DS_MERCHANT_MERCHANTCODE": redsys_config["merchant_code"],
+                    "DS_MERCHANT_MERCHANTCODE": DEFAULT_CONFIG["merchant_code"],
                     "DS_MERCHANT_DIRECTPAYMENT": "FALSE",
                     "DS_MERCHANT_CURRENCY": "978",
                     "DS_MERCHANT_TRANSACTIONTYPE": "0",
-                    "DS_MERCHANT_TERMINAL": redsys_config["terminal"],
+                    "DS_MERCHANT_TERMINAL": DEFAULT_CONFIG["terminal"],
                     "DS_MERCHANT_MERCHANTURL": process_url,
                     "DS_MERCHANT_URLOK": process_url,
                     "DS_MERCHANT_URLKO": process_url,
@@ -101,8 +109,35 @@ class TestRedsysProvider(TestCase):
             ),
         )
 
+    def test_get_form_no_process_on_redirect(self):
+        redsys = RedsysProvider(**redsys_config(process_on_redirect=False))
+        form = redsys.get_form(self.payment)
+
+        fields = form.fields
+        data = json.loads(
+            base64.b64decode(fields["Ds_MerchantParameters"].initial).decode("ascii")
+        )
+        process_url = f"http://localhost:8000/payments/process/{self.payment.token}/"
+        assert_that(
+            data,
+            has_entries(
+                {
+                    "DS_MERCHANT_MERCHANTURL": process_url,
+                    "DS_MERCHANT_URLOK": "http://localhost:8000/1/success",
+                    "DS_MERCHANT_URLKO": "http://localhost:8000/1/failure",
+                    "Ds_Merchant_ConsumerLanguage": "003",
+                }
+            ),
+        )
+
+    def test_process_data_success_get(self):
+        self._process_data_success("get")
+
+    def test_process_data_success_post(self):
+        self._process_data_success("post")
+
     @patch("payments_redsys.compare_signatures", Mock(return_value=True))
-    def test_process_data_success(self):
+    def _process_data_success(self, method):
         redsys_response = redsys_response_factory()
         merchant_params = encode_response(redsys_response)
         signature = compute_signature(
@@ -111,12 +146,12 @@ class TestRedsysProvider(TestCase):
             self.redsys.shared_secret,
         )
 
-        request = self.factory.get(
+        request = getattr(self.factory, method)(
             "/",
             data={
                 "Ds_SignatureVersion": "HMAC_SHA256_V1",
-                "Ds_MerchantParameters": merchant_params,
-                "Ds_Signature": signature,
+                "Ds_MerchantParameters": merchant_params.decode(),
+                "Ds_Signature": signature.decode(),
             },
         )
 
@@ -191,7 +226,7 @@ def test_compute_signature():
     signature = compute_signature(
         "salt",
         b"payload",
-        redsys_config["shared_secret"],
+        DEFAULT_CONFIG["shared_secret"],
     )
     assert signature == b"s7tHdh2bWNAW9FM63CTWPJiHzAeJ2VEw9WL+ivAzEb0="
 
